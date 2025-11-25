@@ -1,0 +1,103 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="180dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/floating_window_background"
+    android:padding="8dp">
+
+    <!-- Title Bar with Window Controls -->
+    <LinearLayout
+        android:id="@+id/floating_drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="6dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="AR"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/floating_minimize_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="4dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_minimize"
+            android:contentDescription="Minimize"
+            android:padding="2dp" />
+
+        <ImageButton
+            android:id="@+id/floating_maximize_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="4dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_maximize"
+            android:contentDescription="Maximize"
+            android:padding="2dp" />
+
+        <ImageButton
+            android:id="@+id/floating_close_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            android:contentDescription="Close"
+            android:padding="2dp" />
+
+    </LinearLayout>
+
+    <!-- Acceptance Rate Display -->
+    <TextView
+        android:id="@+id/floating_ar_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0%"
+        android:textSize="42sp"
+        android:textStyle="bold"
+        android:textColor="#4CAF50"
+        android:gravity="center"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp" />
+
+    <!-- Accept Button -->
+    <Button
+        android:id="@+id/floating_accept_button"
+        android:layout_width="140dp"
+        android:layout_height="42dp"
+        android:text="✓ ACCEPT"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/accept_button_background"
+        android:layout_marginBottom="6dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:layout_gravity="center" />
+
+    <!-- Decline Button -->
+    <Button
+        android:id="@+id/floating_decline_button"
+        android:layout_width="140dp"
+        android:layout_height="42dp"
+        android:text="✗ DECLINE"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/decline_button_background"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:layout_gravity="center" />
+
+</LinearLayout>
