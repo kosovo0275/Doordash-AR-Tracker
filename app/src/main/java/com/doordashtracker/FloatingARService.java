@@ -1,5 +1,9 @@
 package com.doordashtracker;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +23,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import androidx.core.app.NotificationCompat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +32,8 @@ public class FloatingARService extends Service {
     private static final int MAX_ORDERS = 100;
     private static final String PREFS_NAME = "DoordashTrackerPrefs";
     private static final String KEY_ORDER_HISTORY = "orderHistory";
+    private static final String CHANNEL_ID = "floating_ar_channel";
+    private static final int NOTIFICATION_ID = 1;
 
     private WindowManager windowManager;
     private View collapsedView;
@@ -54,24 +61,73 @@ public class FloatingARService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
         mainHandler = new Handler(Looper.getMainLooper());
+    }
 
-        orderHistory = new ArrayList<>();
-        loadOrderHistory();
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        createNotificationChannel();
 
-        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        startForeground(NOTIFICATION_ID, createNotification());
 
-        collapsedView = LayoutInflater.from(this).inflate(R.layout.floating_collapsed_layout, null);
-        floatingView = LayoutInflater.from(this).inflate(R.layout.floating_ar_layout, null);
+        if (floatingView == null) {
+            orderHistory = new ArrayList<>();
+            loadOrderHistory();
 
-        setupWindowParams();
-        setupCollapsedView();
-        setupFloatingView();
+            windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-        windowManager.addView(floatingView, floatingParams);
-        currentState = STATE_FLOATING;
-        updateFloatingUI();
+            collapsedView = LayoutInflater.from(this).inflate(R.layout.floating_collapsed_layout, null);
+            floatingView = LayoutInflater.from(this).inflate(R.layout.floating_ar_layout, null);
+
+            setupWindowParams();
+            setupCollapsedView();
+            setupFloatingView();
+
+            windowManager.addView(floatingView, floatingParams);
+            currentState = STATE_FLOATING;
+            updateFloatingUI();
+        }
+
+        return START_STICKY;
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "AR Tracker Floating Window",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            channel.setDescription("Keeps AR Tracker running in the background");
+            channel.setShowBadge(false);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private Notification createNotification() {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("AR Tracker Active")
+                .setContentText("Floating window is running")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(true)
+                .setShowWhen(false)
+                .build();
     }
 
     private void setupWindowParams() {
@@ -421,6 +477,8 @@ public class FloatingARService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        stopForeground(true);
 
         if (collapsedView != null && collapsedView.getParent() != null) {
             windowManager.removeView(collapsedView);

@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
         loadOrderHistory();
         updateUI();
     }
-    
+
     private void startFloatingMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
@@ -115,10 +115,15 @@ public class MainActivity extends Activity {
                 return;
             }
         }
-        
+
         Intent serviceIntent = new Intent(this, FloatingARService.class);
-        startService(serviceIntent);
         
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+
         Toast.makeText(this, "Floating mode activated", Toast.LENGTH_SHORT).show();
         finish();
     }
